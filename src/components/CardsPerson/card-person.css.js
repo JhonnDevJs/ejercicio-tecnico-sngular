@@ -10,7 +10,7 @@ export const CardPersonStyles = css`
     flex-direction: column;
     max-width: 260px;
     width: 100%;
-    max-height: 294;
+    max-height: 294px;
     height: 100%;
     padding: 10px;
     background-color: white;

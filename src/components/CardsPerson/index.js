@@ -73,6 +73,7 @@ export class CardPerson extends LitElement {
 			${this.isActiveModal
 				? html` <modal-person
 						.imgUrl="${this.imgUrl}"
+						.name="${this.characterData?.name}"
 						.state="${this.characterData?.status}"
 						.gen="${this.characterData?.gender}"
 						.specie="${this.characterData?.species}"
@@ -99,8 +100,16 @@ export class CardPerson extends LitElement {
 			: (this.isActiveModal = true);
 	}
 
-	_AddFav() {
+	_AddFav(event) {
 		this._isFav ? (this._isFav = false) : (this._isFav = true);
+		event.stopPropagation();
+		this.dispatchEvent(
+			new CustomEvent("toggle-fav", {
+				detail: { id: this.id },
+				bubbles: true,
+				composed: true,
+			}),
+		);
 	}
 }
 customElements.define(CardPerson.is, CardPerson);

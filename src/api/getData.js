@@ -4,11 +4,8 @@ export const getData = async () => {
 
 		if (!response.ok) throw new Error("Error: ", response.status);
 
-		const data = await response.json();
+		return await response.json();
 
-		console.log(data.results);
-
-		return data;
 	} catch (error) {
 		console.error(error);
 	}

@@ -19,7 +19,6 @@ export class PageHome extends LitElement {
 
 	static properties = {
 		data: { type: Object },
-		filterData: { type: Array },
 		idFavs: { type: Array },
 		viewFavs: { type: Boolean },
 	};
@@ -28,7 +27,6 @@ export class PageHome extends LitElement {
 		super();
 		this.data = { results: [] };
 		this.idFavs = [];
-		this.filterData = [];
 		this.viewFavs = false;
 	}
 

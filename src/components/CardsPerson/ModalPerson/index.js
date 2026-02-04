@@ -3,6 +3,7 @@ export class ModalPerson extends LitElement {
 	static get is() {
 		return "modal-person";
 	}
+
 	static properties = {
 		imgUrl: { type: String },
 		state: { type: String },
@@ -10,7 +11,7 @@ export class ModalPerson extends LitElement {
 		specie: { type: String },
 		origin: { type: String },
 		addres: { type: String },
-		isOpenModal: { type: Boolean },
+		closeModal: {type: Function}
 	};
 
 	constructor() {
@@ -21,18 +22,14 @@ export class ModalPerson extends LitElement {
 		this.specie = "";
 		this.origin = "";
 		this.addres = "";
-		this.isOpenModal = false;
-		this._closeModal;
 	}
 
 	render() {
-		let active = this.isOpenModal ? `--active: block` : `--active: none`;
-
 		return html`
-			<section class="modal-container" style="${active}">
+			<section class="modal-container">
 				<article class="__modal-card">
 					<header>
-						<button @click="${this._closeModal}">cerrar</button>
+						<button @click="${this.closeModal}">cerrar</button>
 					</header>
 					<img src="${this.imgUrl}" class="__img" />
 					<div class="__body">
@@ -45,13 +42,6 @@ export class ModalPerson extends LitElement {
 				</article>
 			</section>
 		`;
-	}
-
-	_closeModal() {
-		this.isOpenModal = false;
-		this.dispatchEvent(
-			new CustomEvent("close-modal", { bubbles: true, composed: true }),
-		);
 	}
 }
 customElements.define(ModalPerson.is, ModalPerson);

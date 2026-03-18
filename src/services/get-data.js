@@ -1,44 +1,25 @@
-import { LitElement, nothing } from "lit";
+import { LitElement } from "lit";
 
 export class GetData extends LitElement {
   static get is() {
     return "get-data";
   }
 
-  constructor() {
-    super();
-    this.url = "https://rickandmortyapi.com/api/character";
-  }
-
-  static get properties() {
-    return {
-      url: { type: String },
-    };
-  }
-
-  render() {
-    return nothing;
-  }
-
-  async getData() {
+  async getData(page = 1) {
     try {
-      const response = await fetch(this.url);
-
-      if (!response.ok) throw new Error("Error: ", response.status);
-
+      const response = await fetch(
+        `https://rickandmortyapi.com/api/character?page=${page}`,
+      );
       const data = await response.json();
-
-      const characters = data.results;
-
       this.dispatchEvent(
         new CustomEvent("succes-get-data", {
+          detail: data,
           bubbles: true,
           composed: true,
-          detail: characters,
         }),
       );
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching data:", error);
     }
   }
 }

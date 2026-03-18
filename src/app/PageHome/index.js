@@ -6,6 +6,7 @@ import { GetData } from "../../services/get-data";
 // Import Components
 import { HeaderHome } from "../../components/Header";
 import { CardPerson } from "../../components/CardsPerson";
+import { FooterHome } from "../../components/Footer/footer-home.js";
 
 // Import styles
 import { PageStyles } from "./page-home.css";
@@ -19,6 +20,10 @@ export class PageHome extends LitElement {
     super();
     this.characters = [];
     this.idFavs = [];
+    this.viewFavs = false;
+    this.searchQuery = "";
+    this.info = {};
+    this.currentPage = 1;
   }
 
   static get styles() {
@@ -29,17 +34,40 @@ export class PageHome extends LitElement {
     return {
       characters: { type: Array },
       idFavs: { type: Array },
+      viewFavs: { type: Boolean },
+      searchQuery: { type: String },
+      info: { type: Object },
+      currentPage: { type: Number },
     };
   }
 
   firstUpdated() {
-    const getDataCaharacters = this.shadowRoot.querySelector("get-data");
-    getDataCaharacters.getData();
+    this._fetchCharacters();
   }
 
-  get renderCharacters() {
+  _fetchCharacters() {
+    const getDataCharacters = this.shadowRoot.querySelector("get-data");
+    getDataCharacters.getData(this.currentPage);
+  }
+
+  getAllRenderCharacters() {
+    let charactersToRender;
+    if (this.viewFavs) {
+      charactersToRender = this.characters.filter((character) =>
+        this.idFavs.includes(character.id),
+      );
+    } else {
+      charactersToRender = this.characters;
+    }
+
+    if (this.searchQuery) {
+      charactersToRender = charactersToRender.filter((character) =>
+        character.name.toLowerCase().includes(this.searchQuery.toLowerCase()),
+      );
+    }
+
     return html`
-      ${this.characters.map(
+      ${charactersToRender.map(
         (character) => html`
           <card-person
             .characterData="${character}"
@@ -62,21 +90,57 @@ export class PageHome extends LitElement {
     const { id } = event.detail;
     if (this.idFavs.includes(id)) {
       this.idFavs = this.idFavs.filter((favId) => favId !== id);
+      console.log(this.idFavs);
     } else {
       this.idFavs = [...this.idFavs, id];
     }
   }
 
+  _handleSearch(event) {
+    this.searchQuery = event.detail;
+  }
+
+  _handleData(event) {
+    this.characters = event.detail.results;
+    this.info = event.detail.info;
+  }
+
+  _handlePageClick(page) {
+    if (page !== this.currentPage) {
+      this.currentPage = page;
+      this._fetchCharacters();
+    }
+  }
+
+  _nextPage() {
+    if (this.info.next) {
+      this.currentPage++;
+      this._fetchCharacters();
+    }
+  }
+
+  _prevPage() {
+    if (this.info.prev) {
+      this.currentPage--;
+      this._fetchCharacters();
+    }
+  }
+
   render() {
     return html`
-      <header-home .changeView="${() => this._changeView()}"></header-home>
-      <main>${this.renderCharacters}</main>
-      <get-data
-        @succes-get-data="${(event) => (this.characters = event.detail)}"
-      ></get-data>
-      <footer>
-        <span>${new Date().getFullYear()} - by Jhonatan Espinal</span>
-      </footer>
+      <header-home
+        .changeView="${() => this._changeView()}"
+        @search-input="${this._handleSearch}"
+      ></header-home>
+      <main>${this.getAllRenderCharacters()}</main>
+      <get-data @succes-get-data="${this._handleData}"></get-data>
+      <footer-home
+        .currentPage="${this.currentPage}"
+        .totalPages="${this.info.pages || 1}"
+        .handlePrev="${() => this._prevPage()}"
+        .handleNext="${() => this._nextPage()}"
+        .handlePageClick="${(page) => this._handlePageClick(page)}"
+      ></footer-home>
     `;
   }
 }

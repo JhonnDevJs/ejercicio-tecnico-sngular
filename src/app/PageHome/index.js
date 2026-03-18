@@ -45,11 +45,13 @@ export class PageHome extends LitElement {
     this._fetchCharacters();
   }
 
+  // fecthing to the data
   _fetchCharacters() {
     const getDataCharacters = this.shadowRoot.querySelector("get-data");
     getDataCharacters.getData(this.currentPage);
   }
 
+  // method to conditional render cards
   getAllRenderCharacters() {
     let charactersToRender;
     if (this.viewFavs) {
@@ -82,10 +84,12 @@ export class PageHome extends LitElement {
     `;
   }
 
+  // Private method to change view state
   _changeView() {
     this.viewFavs ? (this.viewFavs = false) : (this.viewFavs = true);
   }
 
+  // Private method to save fav characters
   _updateFavs(event) {
     const { id } = event.detail;
     if (this.idFavs.includes(id)) {
@@ -104,6 +108,8 @@ export class PageHome extends LitElement {
     this.characters = event.detail.results;
     this.info = event.detail.info;
   }
+
+  // Private methods for handler navigation
 
   _handlePageClick(page) {
     if (page !== this.currentPage) {
@@ -132,8 +138,11 @@ export class PageHome extends LitElement {
         .changeView="${() => this._changeView()}"
         @search-input="${this._handleSearch}"
       ></header-home>
+
       <main>${this.getAllRenderCharacters()}</main>
+
       <get-data @succes-get-data="${this._handleData}"></get-data>
+      
       <footer-home
         .currentPage="${this.currentPage}"
         .totalPages="${this.info.pages || 1}"

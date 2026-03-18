@@ -10,7 +10,11 @@ export class GetData extends LitElement {
       const response = await fetch(
         `https://rickandmortyapi.com/api/character?page=${page}`,
       );
+
+      if(!response) throw new Error('Error: ', response.status)
+
       const data = await response.json();
+
       this.dispatchEvent(
         new CustomEvent("succes-get-data", {
           detail: data,
@@ -18,6 +22,7 @@ export class GetData extends LitElement {
           composed: true,
         }),
       );
+      
     } catch (error) {
       console.error("Error fetching data:", error);
     }
